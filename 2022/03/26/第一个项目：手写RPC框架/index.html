@@ -86,12 +86,19 @@
 <meta property="og:site_name" content="hco3o&#39;s blog">
 <meta property="og:description" content="绪论课程大纲&amp;理论篇概述 理论篇（RPC核心原理、相关技术介绍）  实战篇（gk-rpc代码实现、使用案例）  总结篇    概念讲解RPC： Remote Procedure Call，即远程过程调用  procedure：一段可执行的代码（没有返回值的方法） call：调用了进程的方法  是分布式系统常见的一种通信方法，从跨进程到跨物理机已经有几十年历史 跨进程交互方式：RESTful">
 <meta property="og:locale">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124105403753.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124105506615.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124111708964.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124112258893.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124113624611.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124122026361.png">
 <meta property="article:published_time" content="2022-03-26T10:52:11.000Z">
-<meta property="article:modified_time" content="2022-03-26T12:09:15.669Z">
+<meta property="article:modified_time" content="2022-03-28T10:57:05.762Z">
 <meta property="article:author" content="hco3o">
 <meta property="article:tag" content="RPC">
 <meta property="article:tag" content="项目">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124105403753.png">
 
 
 
@@ -326,9 +333,9 @@
 </ul>
 <p>是分布式系统常见的一种通信方法，从<strong>跨进程</strong>到跨物理机已经有几十年历史</p>
 <p><strong>跨进程交互方式</strong>：RESTful、WebService、HTTP、基于DB做数据交换、基于MQ做数据交换以及RPC</p>
-<h2 id="图解交互形式-现有框架对比"><a href="#图解交互形式-现有框架对比" class="headerlink" title="图解交互形式-现有框架对比"></a>图解交互形式-现有框架对比</h2><p>![image-20220124105403753](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124105403753.png)</p>
+<h2 id="图解交互形式-现有框架对比"><a href="#图解交互形式-现有框架对比" class="headerlink" title="图解交互形式-现有框架对比"></a>图解交互形式-现有框架对比</h2><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124105403753.png" alt="image-20220124105403753"></p>
 <p>两个系统异步执行，相互不影响。系统A放到数据存储系统，B获取到数据，拿到后就可以进行下一步的动作</p>
-<p>![image-20220124105506615](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124105506615.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124105506615.png" alt="image-20220124105506615"></p>
 <p>同步执行，客户端会影响到服务端。对响应的速度要求高</p>
 <p>客户端会一直等待服务端的返回</p>
 <hr>
@@ -339,14 +346,14 @@
 <li>Stub：存根、服务描述（理解为Java接口）</li>
 </ul>
 <p><strong>RPC的优势：可以像调用本地方法那样调用远程方法</strong></p>
-<p>![image-20220124111708964](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124111708964.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124111708964.png" alt="image-20220124111708964"></p>
 <ul>
 <li>跨语言：允许server端和client端使用不同的语言</li>
 <li>服务定义：如何描述服务（Java接口就是存根）</li>
 <li>服务治理：RPC调用加上对服务的综合管理（加上注册中心，权限控制等）</li>
 </ul>
 <p><code>dubbo</code>不仅是RPC框架，也是服务治理框架</p>
-<h2 id="核心原理"><a href="#核心原理" class="headerlink" title="核心原理"></a>核心原理</h2><p>![image-20220124112258893](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124112258893.png)</p>
+<h2 id="核心原理"><a href="#核心原理" class="headerlink" title="核心原理"></a>核心原理</h2><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124112258893.png" alt="image-20220124112258893"></p>
 <ol start="0">
 <li>server把需要暴露的服务和地址信息注册到注册中心</li>
 <li>client订阅注册中心，从注册中心关注需要的服务在哪里</li>
@@ -355,7 +362,7 @@
 </ol>
 <p>注册中心不是必要的组件，client可以把服务端的信息写死，直接调用server</p>
 <p>call是RPC最关键的一步</p>
-<p>![image-20220124113624611](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124113624611.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124113624611.png" alt="image-20220124113624611"></p>
 <ol>
 <li>client要调用接口里的方法，也就是<strong>存根</strong>里的方法</li>
 <li>首先要把传输的对象转化为二进制，这个过程叫做序列化</li>
@@ -389,7 +396,7 @@
 <p>第四步：实现Server模块（暴露服务，对服务做管理）</p>
 <p>第五步：实现Client模块（用动态代理，代理对象内部通过网络通信与server进行交互）</p>
 <p>第六步：<code>gk-rpc</code>使用案例</p>
-<h2 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h2><p>![image-20220124122026361](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220124122026361.png)</p>
+<h2 id="类图"><a href="#类图" class="headerlink" title="类图"></a>类图</h2><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220124122026361.png" alt="image-20220124122026361"></p>
 <ol>
 <li><p>协议模块：描述server与client之间的通信协议</p>
 <p>两个核心的类：</p>

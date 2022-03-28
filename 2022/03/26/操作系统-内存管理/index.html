@@ -79,19 +79,27 @@
 
 
 
-<meta name="description" content="虚拟内存操作系统引入虚拟内存，进程持有的虚拟地址会通过CPU芯片中的内存管理单元(MMU)的映射关系，来转换成为物理地址，然后再通过物理地址访问内存  ![image-20220314195605351](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220314195605351.png) 内存">
+<meta name="description" content="虚拟内存操作系统引入虚拟内存，进程持有的虚拟地址会通过CPU芯片中的内存管理单元(MMU)的映射关系，来转换成为物理地址，然后再通过物理地址访问内存   内存分段  缺点  内存碎片 内存交换效率低   产生内存碎片 内存交换效率低把音乐的256MB写到硬盘，再写到内存中（紧跟已被占用的512MB）。这样能空出连续的256MB空间。硬盘访问速度慢 内存分页  缺点：进程多，页表庞大 32位系统，虚">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作系统-内存管理">
 <meta property="og:url" content="http://hco3o.xyz/2022/03/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="hco3o&#39;s blog">
-<meta property="og:description" content="虚拟内存操作系统引入虚拟内存，进程持有的虚拟地址会通过CPU芯片中的内存管理单元(MMU)的映射关系，来转换成为物理地址，然后再通过物理地址访问内存  ![image-20220314195605351](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220314195605351.png) 内存">
+<meta property="og:description" content="虚拟内存操作系统引入虚拟内存，进程持有的虚拟地址会通过CPU芯片中的内存管理单元(MMU)的映射关系，来转换成为物理地址，然后再通过物理地址访问内存   内存分段  缺点  内存碎片 内存交换效率低   产生内存碎片 内存交换效率低把音乐的256MB写到硬盘，再写到内存中（紧跟已被占用的512MB）。这样能空出连续的256MB空间。硬盘访问速度慢 内存分页  缺点：进程多，页表庞大 32位系统，虚">
 <meta property="og:locale">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220314195605351.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320170407734.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320170039924.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320165715643.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320172545471.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320190242757.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320190555739.png">
 <meta property="article:published_time" content="2022-03-26T11:32:25.000Z">
-<meta property="article:modified_time" content="2022-03-26T12:06:25.574Z">
+<meta property="article:modified_time" content="2022-03-28T10:56:35.987Z">
 <meta property="article:author" content="hco3o">
 <meta property="article:tag" content="操作系统">
 <meta property="article:tag" content="基础知识">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220314195605351.png">
 
 
 
@@ -312,8 +320,8 @@
 
       
         <h1 id="虚拟内存"><a href="#虚拟内存" class="headerlink" title="虚拟内存"></a>虚拟内存</h1><p>操作系统引入虚拟内存，进程持有的虚拟地址会通过CPU芯片中的内存管理单元(MMU)的映射关系，来转换成为物理地址，然后再通过物理地址访问内存 </p>
-<p>![image-20220314195605351](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220314195605351.png)</p>
-<h1 id="内存分段"><a href="#内存分段" class="headerlink" title="内存分段"></a>内存分段</h1><p>![image-20220320170407734](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320170407734.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220314195605351.png" alt="image-20220314195605351"></p>
+<h1 id="内存分段"><a href="#内存分段" class="headerlink" title="内存分段"></a>内存分段</h1><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320170407734.png" alt="image-20220320170407734"></p>
 <blockquote>
 <p>缺点</p>
 <ul>
@@ -321,16 +329,16 @@
 <li>内存交换效率低</li>
 </ul>
 </blockquote>
-<h2 id="产生内存碎片"><a href="#产生内存碎片" class="headerlink" title="产生内存碎片"></a>产生内存碎片</h2><p>![image-20220320170039924](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320170039924.png)</p>
+<h2 id="产生内存碎片"><a href="#产生内存碎片" class="headerlink" title="产生内存碎片"></a>产生内存碎片</h2><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320170039924.png" alt="image-20220320170039924"></p>
 <h2 id="内存交换效率低"><a href="#内存交换效率低" class="headerlink" title="内存交换效率低"></a>内存交换效率低</h2><p>把音乐的256MB写到硬盘，再写到内存中（紧跟已被占用的512MB）。这样能空出连续的256MB空间。<strong>硬盘访问速度慢</strong></p>
-<h1 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h1><p>![image-20220320165715643](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320165715643.png)</p>
+<h1 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h1><p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320165715643.png" alt="image-20220320165715643"></p>
 <blockquote>
 <p>缺点：进程多，页表庞大</p>
 <p>32位系统，虚拟地址空间4GB（0x00000000 ~ 0xFFFFFFFF，即最大虚拟内存为2<sup>32</sup> Bytes = 4GB），一个页大小4KB，虚拟地址空间需要分成2<sup>20</sup>个页。页表里每行需要4字节，4GB映射需要4MB内存存储页表</p>
 <p>100个进程，需要400MB</p>
 </blockquote>
 <h2 id="多级页表"><a href="#多级页表" class="headerlink" title="多级页表"></a>多级页表</h2><p>把2<sup>20</sup>个页表项再分页，把一个页表分为2<sup>10</sup>个页表（二级页表），每个二级页表中包含2<sup>10</sup>个<strong>页表项</strong>。这样就一共是2<sup>20</sup>个页表项</p>
-<p>![image-20220320172545471](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320172545471.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320172545471.png" alt="image-20220320172545471"></p>
 <blockquote>
 <p>分二级表，映射地址空间需要4KB（一级页表） + 4MB（二级页表）内存，占用空间更大了？</p>
 </blockquote>
@@ -361,7 +369,7 @@
 </ul>
 <p><strong>Linux采用页式内存管理，但同时不可避免地设计了段机制</strong></p>
 <p>Linux系统每个段都是从0地址开始的整个4GB虚拟空间（32位环境），也就是说所有段的起始地址是一样的。Linux所面对的地址空间都是线性地址空间（虚拟地址），相当于屏蔽了CPU中的逻辑地址概念，段只被用于访问控制和内存保护。</p>
-<p>![image-20220320190242757](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320190242757.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320190242757.png" alt="image-20220320190242757"></p>
 <blockquote>
 <p>内核空间和用户空间的区别</p>
 </blockquote>
@@ -370,7 +378,7 @@
 <li>进入内核态才可以访问内核空间内存</li>
 </ul>
 <p>每个进程有独立的虚拟内存，<strong>每个虚拟内存中的内核地址都关联相同的物理内存</strong>（方便进程切换到内核态的时候访问内核空间）</p>
-<p>![image-20220320190555739](C:\Users\Jiang Haicheng\AppData\Roaming\Typora\typora-user-images\image-20220320190555739.png)</p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220320190555739.png" alt="image-20220320190555739"></p>
 
       
     </div>
