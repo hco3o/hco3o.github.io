@@ -239,6 +239,204 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://hco3o.xyz/2022/03/28/%E9%9B%B6%E6%8B%B7%E8%B4%9D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="hco3o's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/03/28/%E9%9B%B6%E6%8B%B7%E8%B4%9D/" itemprop="url">零拷贝</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-03-28T18:33:11+08:00">
+                2022-03-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="DMA技术"><a href="#DMA技术" class="headerlink" title="DMA技术"></a><code>DMA</code>技术</h2><h3 id="不使用DMA的I-O"><a href="#不使用DMA的I-O" class="headerlink" title="不使用DMA的I/O"></a>不使用<code>DMA</code>的<code>I/O</code></h3><ol>
+<li>CPU发指令给磁盘控制器</li>
+<li>磁盘控制器准备数据，把数据放到控制器的内部缓存，产生中断</li>
+<li>CPU收到中断，停下手中的工作把磁盘缓冲区数据一个字节一个字节读入自己的寄存器，然后写入内存</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328160852244.png" alt="image-20220328160852244"></p>
+<h3 id="使用DMA的I-O"><a href="#使用DMA的I-O" class="headerlink" title="使用DMA的I/O"></a>使用<code>DMA</code>的<code>I/O</code></h3><ol>
+<li>用户进程调用read方法，向操作系统发出I/O请求，请求读取数据到自己的内存缓冲区中，进程进入阻塞状态</li>
+<li>操作系统收到请求后，进一步将I/O请求发送DMA，然后让CPU执行其他任务</li>
+<li>DMA进─步将IVO请求发送给磁盘</li>
+<li>磁盘收到DMA的I/O请求，把数据从磁盘读取到磁盘控制器的缓冲区中，当磁盘控制器的缓冲区被读满后，向 DMA发起中断信号，告知自己缓冲区已满</li>
+<li>DMA 收到磁盘的信号，将磁盘控制器缓冲区中的数据拷贝到内核缓冲区中，此时不占用CPU，CPU 可以执行其他任务</li>
+<li>当DMA读取了足够多的数据，就会发送中断信号给CPU</li>
+<li>CPU 收到 DMA的信号，知道数据已经准备好，于是将数据从内核拷贝到用户空间，系统调用返回</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328160901597.png" alt="image-20220328160901597"></p>
+<h2 id="服务端文件传输的几种方式"><a href="#服务端文件传输的几种方式" class="headerlink" title="服务端文件传输的几种方式"></a>服务端文件传输的几种方式</h2><h3 id="read-write"><a href="#read-write" class="headerlink" title="read + write"></a><code>read + write</code></h3><ol>
+<li>磁盘数据拷贝到内核态缓存（DMA）</li>
+<li>内核态缓存拷贝到用户缓存（CPU），需要上下文切换</li>
+<li>用户缓存拷贝到内核socket缓存（CPU），需要上下文切换</li>
+<li>内核socket缓存拷贝到网卡缓存（DMA）</li>
+</ol>
+<p><strong>四次数据拷贝，四次用户态与内核态的上下文切换</strong></p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328155851817.png" alt="image-20220328155851817"></p>
+<h3 id="mmap-write"><a href="#mmap-write" class="headerlink" title="mmap + write"></a><code>mmap + write</code></h3><ol>
+<li>应用程序调用<code>mmap()</code>，磁盘数据拷贝到内核态缓存（DMA）。应用程序与内核共享这块缓存区域</li>
+<li>应用程序调用write()，操作系统把内核态缓存的数据直接拷贝到socket缓存（CPU）。这一切发生在内核态</li>
+<li>内核socket缓存拷贝到网卡缓存（DMA）</li>
+</ol>
+<p><strong>三次数据拷贝，四次上下文切换</strong></p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328155913426.png" alt="image-20220328155913426"></p>
+<h3 id="sendfile"><a href="#sendfile" class="headerlink" title="sendfile"></a><code>sendfile</code></h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssize_t sendfile(int out_fd, int in_fd, off_t *offset, size_t count);</span><br></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<ul>
+<li>目标端文件描述符</li>
+<li>源端文件描述符</li>
+<li>源端偏移量</li>
+<li>复制数据的长度</li>
+</ul>
+<p>返回值</p>
+<ul>
+<li>实际复制数据的长度</li>
+</ul>
+<p><strong>三次数据拷贝，两次上下文切换</strong></p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328155152759.png" alt="image-20220328155152759"></p>
+<h3 id="真正的零拷贝"><a href="#真正的零拷贝" class="headerlink" title="真正的零拷贝"></a>真正的零拷贝</h3><p>网卡支持<code>SG-DMA</code></p>
+<ol>
+<li>磁盘数据拷贝到内核缓存（DMA）</li>
+<li>内核缓存描述符和数据长度传给socket缓存，网卡<code>SG-DMA</code>直接将内核缓存数据拷贝到网卡缓存</li>
+</ol>
+<p><strong>两次上下文切换，两次数据拷贝（都由DMA完成）</strong></p>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328155726297.png" alt="image-20220328155726297"></p>
+<h2 id="内核缓存——PageCache"><a href="#内核缓存——PageCache" class="headerlink" title="内核缓存——PageCache"></a>内核缓存——<code>PageCache</code></h2><blockquote>
+<p><code>PageCache</code>缓存最近被访问的数据（减少读取磁盘的次数）</p>
+</blockquote>
+<p>读磁盘时优先从<code>PageCache</code>里找，如果找不到就从磁盘中读然后缓存到<code>PageCache</code>里</p>
+<p>空间不足时淘汰最久未被访问的缓存</p>
+<blockquote>
+<p>预读（减少旋转磁头的影响）</p>
+</blockquote>
+<p>read每次读32KB，内核把<code>33~64KB</code>的数据也读到<code>PageCache</code>中，后面再读取<code>33~64KB</code>的数据的时候代价会变小</p>
+<blockquote>
+<p><code>PageCache</code>不适合大文件传输</p>
+</blockquote>
+<h2 id="大文件传输"><a href="#大文件传输" class="headerlink" title="大文件传输"></a>大文件传输</h2><p>最初read读取文件，进程要阻塞直到磁盘返回数据</p>
+<blockquote>
+<p>阻塞使用异步<code>I/O</code>解决</p>
+</blockquote>
+<p><img src="https://raw.githubusercontent.com/hco3o/cloudimg/master/image-20220328162036001.png" alt="image-20220328162036001"></p>
+<p>绕开了<code>PageCache</code>，称为直接<code>I/O</code>，如果使用<code>PageCache</code>则为缓存<code>I/O</code></p>
+<p>大文件不能使用<code>PageCache</code>，被占用后使得热点小文件无法使用</p>
+<blockquote>
+<p>高并发使用异步<code>I/O</code> + 直接<code>I/O</code></p>
+</blockquote>
+<ul>
+<li>传输大文件：异步<code>I/O</code> + 直接<code>I/O</code></li>
+<li>传输小文件：零拷贝</li>
+</ul>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://hco3o.xyz/2022/03/26/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1148,7 +1346,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
